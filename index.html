@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanta Bot | Creative Utility</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Load Handwritten Font for Creative Design -->
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <!-- Load FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    
+    <style>
+        /* --- Creative Theme Variables --- */
+        :root {
+            --vanta-purple: #7c3aed;
+            --vanta-purple-light: #8b5cf6;
+            --vanta-bg: #fffbeb;
+            --vanta-border: #18181b;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: var(--vanta-bg);
+            color: #18181b;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* --- Global Creative Components --- */
+        
+        /* Fixed Sketchy Box: No 'transform' here to avoid Tailwind conflicts */
+        .sketchy-box {
+            background: white;
+            border: 2px solid var(--vanta-border);
+            box-shadow: 4px 4px 0px 0px var(--vanta-border);
+            border-radius: 0.75rem;
+            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        .sketchy-box:hover {
+            box-shadow: 8px 8px 0px 0px var(--vanta-border);
+            /* Translation is now handled by Tailwind utility classes in HTML */
+        }
+        
+        /* Fixed Buttons */
+        .creative-btn {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border: 2px solid var(--vanta-border);
+            box-shadow: 4px 4px 0px 0px var(--vanta-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .creative-btn:hover {
+            box-shadow: 6px 6px 0px 0px var(--vanta-border);
+            /* transform handled by Tailwind */
+        }
+        .creative-btn:active {
+            box-shadow: 2px 2px 0px 0px var(--vanta-border);
+            transform: translate(2px, 2px) !important; /* Force override for click effect */
+        }
+        .btn-primary {
+            background-color: var(--vanta-purple);
+            color: white;
+        }
+        .btn-secondary {
+            background-color: white;
+            color: #18181b;
+        }
+
+        /* --- Navbar Styles --- */
+        .navbar-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--vanta-border);
+        }
+
+        .nav-dock {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            border: 2px solid var(--vanta-border);
+            background-color: white;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.1);
+        }
+
+        .nav-tab {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #52525b;
+            cursor: pointer;
+            background: transparent;
+            border: 2px solid transparent;
+        }
+
+        .nav-tab:hover {
+            background-color: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #18181b;
+            transform: rotate(-2deg);
+        }
+
+        .nav-tab.active {
+            background-color: #f5f3ff;
+            color: var(--vanta-purple);
+            border: 2px solid var(--vanta-purple);
+            transform: rotate(2deg) scale(1.05);
+            box-shadow: 2px 2px 0px 0px var(--vanta-purple-light);
+        }
+
+        .nav-separator {
+            height: 24px;
+            width: 2px;
+            background-color: #e5e7eb;
+            margin: 0 0.25rem;
+            transform: rotate(10deg);
+        }
+
+        /* --- Hero Section --- */
+        .hero-perspective-container { perspective: 1000px; overflow: visible; }
+        
+        .hero-card-frame {
+            background: #27272a;
+            border: 3px solid var(--vanta-border);
+            border-radius: 1.5rem;
+            box-shadow: 8px 8px 0px 0px var(--vanta-border);
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+        
+        .sticker {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.8;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.2));
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        /* --- Page Transitions --- */
+        .page-section { display: none; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .page-section.active { display: block; }
+        @keyframes popIn { 
+            from { opacity: 0; transform: scale(0.95) translateY(10px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+
+        .creative-input {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.2rem;
+            border: 2px solid var(--vanta-border);
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.1);
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+        .creative-input:focus {
+            outline: none;
+            box-shadow: 4px 4px 0px 0px var(--vanta-purple);
+            border-color: var(--vanta-purple);
+            transform: translate(-1px, -1px);
+        }
+
+        /* --- Lenis Scroll CSS --- */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar-container fixed w-full top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="router('home')">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-purple-400 rounded-lg transform rotate-3 group-hover:rotate-6 transition-transform"></div>
+                        <div class="relative bg-white border-2 border-black px-3 py-1 rounded-lg font-black text-3xl transform -rotate-2 group-hover:-rotate-3 transition-transform">
+                            Vanta<span class="text-purple-600">.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="hidden md:flex justify-center flex-1">
+                    <div class="nav-dock">
+                        <button onclick="router('home')" class="nav-tab active" data-target="home">
+                            <i class="fa-solid fa-house tab-icon mr-2"></i><span class="tab-label">Home</span>
+                        </button>
+                        <div class="nav-separator"></div>
+                        <button onclick="router('features')" class="nav-tab" data-target="features">
+                            <i class="fa-solid fa-star tab-icon mr-2"></i><span class="tab-label">Features</span>
+                        </button>
+                        <button onclick="router('premium')" class="nav-tab" data-target="premium">
+                            <i class="fa-solid fa-gem tab-icon mr-2"></i><span class="tab-label">Premium</span>
+                        </button>
+                        <div class="nav-separator"></div>
+                        <button onclick="router('commands')" class="nav-tab" data-target="commands">
+                            <i class="fa-solid fa-terminal tab-icon mr-2"></i><span class="tab-label">Commands</span>
+                        </button>
+                    </div>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <!-- Updated hover classes for buttons -->
+                    <a href="https://discord.com/oauth2/authorize?client_id=1419881059587199039&permissions=8&integration_type=0&scope=bot" target="_blank" class="hidden md:inline-flex creative-btn btn-primary px-6 py-2 rounded-xl text-lg hover:-translate-y-1 hover:-translate-x-1 hover:rotate-2">
+                        Invite Bot <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                    </a>
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md text-gray-800 hover:text-purple-600 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-b-2 border-black absolute w-full left-0 shadow-xl">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <span onclick="router('home')" class="block px-4 py-3 border-2 border-transparent hover:border-black hover:bg-purple-50 rounded-lg text-xl font-bold cursor-pointer transition-all">Home</span>
+                <span onclick="router('features')" class="block px-4 py-3 border-2 border-transparent hover:border-black hover:bg-purple-50 rounded-lg text-xl font-bold cursor-pointer transition-all">Features</span>
+                <span onclick="router('premium')" class="block px-4 py-3 border-2 border-transparent hover:border-black hover:bg-purple-50 rounded-lg text-xl font-bold cursor-pointer transition-all">Premium</span>
+                <span onclick="router('commands')" class="block px-4 py-3 border-2 border-transparent hover:border-black hover:bg-purple-50 rounded-lg text-xl font-bold cursor-pointer transition-all">Commands</span>
+                <a href="https://discord.com/oauth2/authorize?client_id=1419881059587199039&permissions=8&integration_type=0&scope=bot" target="_blank" class="block w-full text-center mt-4 creative-btn btn-primary py-3 rounded-lg">Invite Bot</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 min-h-screen">
+        
+        <!-- PAGE: HOME -->
+        <div id="home" class="page-section active">
+            <section class="relative w-full overflow-hidden" style="min-height: 100vh;">
+                <div class="sticker top-32 left-[5%] text-6xl rotate-12 text-yellow-400">⚡️</div>
+                <div class="sticker bottom-20 right-[5%] text-6xl -rotate-12 text-blue-400">💎</div>
+                <div class="sticker top-40 right-[15%] text-4xl rotate-45 text-purple-400">🎵</div>
+
+                <div class="relative py-16 flex flex-col items-center justify-start hero-perspective-container">
+                    
+                    <div id="hero-header" class="max-w-4xl mx-auto text-center z-20 px-4 transition-transform duration-100 ease-out mb-12">
+                        <div class="inline-flex items-center px-4 py-1 rounded-full bg-green-100 border-2 border-black text-green-700 text-lg font-bold rotate-[-2deg] mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <span class="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse border border-black"></span> V 2.0 is Live!
+                        </div>
+                        
+                        <h1 class="text-6xl md:text-8xl font-black text-slate-900 mb-6 leading-none relative inline-block transform rotate-[-1deg]">
+                            The Only Bot <br>
+                            <span class="relative inline-block text-purple-600 mt-2">
+                                You'll Need
+                                <svg class="absolute w-full h-4 -bottom-1 left-0 text-yellow-300 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                    <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="8" fill="none" />
+                                </svg>
+                            </span>
+                        </h1>
+                        
+                        <p class="mt-6 max-w-2xl mx-auto text-2xl text-slate-600 mb-10 transform rotate-[1deg]">
+                            Stop using 5 different bots. Vanta does Music, Moderation, and Levels in one sketchy package.
+                        </p>
+                        
+                        <div class="flex flex-col sm:flex-row justify-center gap-6">
+                            <a href="https://discord.com/oauth2/authorize?client_id=1419881059587199039&permissions=8&integration_type=0&scope=bot" target="_blank" class="creative-btn btn-primary px-8 py-4 rounded-xl text-xl rotate-[-2deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 no-underline">
+                                Add to Discord
+                            </a>
+                            <button onclick="router('features')" class="creative-btn btn-secondary px-8 py-4 rounded-xl text-xl rotate-[2deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1">
+                                View Features
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="hero-card" class="hero-3d-card hero-card-frame relative max-w-5xl w-[95%] md:w-full mx-auto h-[35rem] md:h-[45rem] p-4 z-10 bg-slate-800">
+                        <div class="h-full w-full rounded-xl bg-slate-900 overflow-hidden relative border-2 border-slate-700 flex">
+                            <div class="w-20 md:w-64 bg-slate-950 border-r-2 border-slate-800 flex flex-col p-4">
+                                <div class="h-10 w-10 md:w-32 bg-slate-800 rounded-lg mb-8 border border-slate-700"></div>
+                                <div class="space-y-4">
+                                    <div class="h-4 w-12 md:w-40 bg-slate-800 rounded"></div>
+                                    <div class="h-4 w-12 md:w-32 bg-slate-800 rounded opacity-50"></div>
+                                    <div class="h-4 w-12 md:w-36 bg-slate-800 rounded opacity-50"></div>
+                                </div>
+                                <div class="mt-auto p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg border-2 border-black text-white font-bold text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hidden md:block">
+                                    PRO Active
+                                </div>
+                            </div>
+                            <div class="flex-1 p-8">
+                                <div class="flex justify-between items-center mb-8">
+                                    <div class="h-10 w-48 bg-slate-800 rounded-lg border border-slate-700"></div>
+                                    <div class="flex gap-2">
+                                        <div class="h-10 w-10 rounded-full bg-slate-800 border border-slate-700"></div>
+                                        <div class="h-10 w-10 rounded-full bg-purple-500 border-2 border-black"></div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                    <div class="h-32 rounded-xl bg-slate-800 p-4 border-2 border-slate-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
+                                        <div class="text-purple-400 text-2xl mb-2"><i class="fa-solid fa-music"></i></div>
+                                        <div class="text-slate-400 text-lg">Playing</div>
+                                        <div class="text-white text-xl font-bold">Lofi Hip Hop</div>
+                                    </div>
+                                    <div class="h-32 rounded-xl bg-slate-800 p-4 border-2 border-slate-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
+                                        <div class="text-blue-400 text-2xl mb-2"><i class="fa-solid fa-user-shield"></i></div>
+                                        <div class="text-slate-400 text-lg">Mod Actions</div>
+                                        <div class="text-white text-xl font-bold">12 today</div>
+                                    </div>
+                                    <div class="h-32 rounded-xl bg-slate-800 p-4 border-2 border-slate-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
+                                        <div class="text-green-400 text-2xl mb-2"><i class="fa-solid fa-arrow-up"></i></div>
+                                        <div class="text-slate-400 text-lg">Server Level</div>
+                                        <div class="text-white text-xl font-bold">Level 5</div>
+                                    </div>
+                                </div>
+                                <div class="h-48 rounded-xl bg-slate-800 border-2 border-slate-700 relative overflow-hidden flex items-end px-6 gap-4 pb-0">
+                                    <div class="w-full bg-purple-500/40 h-[40%] rounded-t-md border-t-2 border-x-2 border-slate-600"></div>
+                                    <div class="w-full bg-purple-500/60 h-[70%] rounded-t-md border-t-2 border-x-2 border-slate-600"></div>
+                                    <div class="w-full bg-purple-500/50 h-[50%] rounded-t-md border-t-2 border-x-2 border-slate-600"></div>
+                                    <div class="w-full bg-purple-500/80 h-[85%] rounded-t-md border-t-2 border-x-2 border-slate-600"></div>
+                                    <div class="w-full bg-purple-500 h-[60%] rounded-t-md border-t-2 border-x-2 border-slate-600"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="py-12 bg-white border-y-2 border-black">
+                <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div class="group cursor-default">
+                        <div class="text-5xl font-black text-slate-900 group-hover:scale-110 transition-transform">2M+</div>
+                        <div class="text-xl text-slate-500 font-bold rotate-[-2deg]">Users Served</div>
+                    </div>
+                    <div class="group cursor-default">
+                        <div class="text-5xl font-black text-slate-900 group-hover:scale-110 transition-transform">10k+</div>
+                        <div class="text-xl text-slate-500 font-bold rotate-[2deg]">Servers</div>
+                    </div>
+                    <div class="group cursor-default">
+                        <div class="text-5xl font-black text-slate-900 group-hover:scale-110 transition-transform">99%</div>
+                        <div class="text-xl text-slate-500 font-bold rotate-[-1deg]">Uptime</div>
+                    </div>
+                    <div class="group cursor-default">
+                        <div class="text-5xl font-black text-slate-900 group-hover:scale-110 transition-transform">24/7</div>
+                        <div class="text-xl text-slate-500 font-bold rotate-[3deg]">Support</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE: FEATURES -->
+        <div id="features" class="page-section">
+            <section class="py-24">
+                <div class="max-w-6xl mx-auto px-4">
+                    <div class="text-center space-y-6 mb-16">
+                        <div class="text-2xl text-purple-600 font-bold rotate-[2deg] bg-purple-100 inline-block px-3 py-1 rounded-lg border-2 border-black">
+                            All-in-One Powerhouse
+                        </div>
+                        <div class="relative inline-block">
+                            <h2 class="text-5xl md:text-7xl font-black text-slate-900 rotate-[-1deg]">
+                                Features You Need
+                                <div class="absolute -right-12 -top-6 text-yellow-400 rotate-12 text-5xl drop-shadow-md">✨</div>
+                            </h2>
+                            <div class="absolute -bottom-2 left-0 w-full h-4 bg-purple-400/30 rotate-[-1deg] rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 px-4 md:px-0">
+                        <!-- Cards using Tailwind hover utilities for smooth composition with rotation -->
+                        
+                        <!-- Feature 1 -->
+                        <div class="sketchy-box p-6 rotate-[-1deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-purple-100 text-purple-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-12 transition-transform">
+                                    <i class="fa-solid fa-music"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-purple-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Hi-Fi Music</h3>
+                            <p class="text-xl text-gray-600 mb-6">Lossless audio streaming from Spotify, SoundCloud, & more.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Bass Boost & EQ</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> 24/7 Radio Mode</li>
+                            </ul>
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="sketchy-box p-6 rotate-[1deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-blue-100 text-blue-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:-rotate-12 transition-transform">
+                                    <i class="fa-solid fa-gavel"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-blue-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Moderation</h3>
+                            <p class="text-xl text-gray-600 mb-6">Keep your server safe with advanced logging & auto-mod.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Auto-Mod Filters</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Anti-Raid Tools</li>
+                            </ul>
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="sketchy-box p-6 rotate-[-2deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-green-100 text-green-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-green-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Automation</h3>
+                            <p class="text-xl text-gray-600 mb-6">Engage community with Welcomers and Leveling.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Canvas Welcomer</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Custom Commands</li>
+                            </ul>
+                        </div>
+
+                        <!-- Feature 4 -->
+                        <div class="sketchy-box p-6 rotate-[1deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-yellow-100 text-yellow-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-12 transition-transform">
+                                    <i class="fa-solid fa-coins"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-yellow-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Global Economy</h3>
+                            <p class="text-xl text-gray-600 mb-6">Immersive currency system with shops and trading.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Global Market</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Robbing & Heists</li>
+                            </ul>
+                        </div>
+
+                        <!-- Feature 5 -->
+                        <div class="sketchy-box p-6 rotate-[-2deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-pink-100 text-pink-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:-rotate-12 transition-transform">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-pink-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Fun Zone</h3>
+                            <p class="text-xl text-gray-600 mb-6">Minigames to keep your chat active and engaged.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Trivia & Akinator</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Image Gen</li>
+                            </ul>
+                        </div>
+
+                        <!-- Feature 6 -->
+                        <div class="sketchy-box p-6 rotate-[2deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-cyan-100 text-cyan-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-user-group"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-cyan-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Social Profiles</h3>
+                            <p class="text-xl text-gray-600 mb-6">Customizable profiles and reputation systems.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Custom Rank Cards</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Reputation System</li>
+                            </ul>
+                        </div>
+
+                        <!-- Feature 7: And More -->
+                        <div class="sketchy-box p-6 rotate-[-1deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 group md:col-span-3 lg:col-span-1 lg:col-start-2">
+                            <div class="mb-6 flex justify-between items-start">
+                                <div class="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-black bg-gray-100 text-gray-600 text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-12 transition-transform">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-2xl text-gray-300 group-hover:text-gray-500 transition-colors -rotate-45"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">And Much More</h3>
+                            <p class="text-xl text-gray-600 mb-6">We push updates weekly to keep things fresh.</p>
+                            <ul class="space-y-2 text-lg">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Ticket System</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Suggestions & Polls</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE: PREMIUM (Fixed CSS Conflicts) -->
+        <div id="premium" class="page-section">
+            <section class="py-24">
+                <div class="w-full max-w-6xl mx-auto px-4">
+                    <div class="text-center space-y-6 mb-16">
+                        <div class="text-2xl text-blue-500 font-bold rotate-[-2deg] bg-blue-50 inline-block px-4 py-1 rounded-lg border-2 border-black">
+                            Flexible Plans
+                        </div>
+                        <div class="relative inline-block block">
+                            <h2 class="text-5xl md:text-7xl font-black text-slate-900 rotate-[1deg]">
+                                Unlock Vanta Power
+                            </h2>
+                        </div>
+                        <p class="text-2xl text-gray-600">Choose the perfect time for your community</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
+                        
+                        <!-- Tier 1 -->
+                        <div class="sketchy-box p-8 rotate-[-1deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 relative group">
+                            <div class="w-14 h-14 rounded-full mb-6 flex items-center justify-center border-2 border-black bg-white text-3xl shadow-sm group-hover:bg-blue-100 transition-colors">
+                                ⚡️
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Starter</h3>
+                            <div class="mb-6">
+                                <span class="text-5xl font-black">$2</span><span class="text-xl text-gray-500">/mo</span>
+                            </div>
+                            <div class="space-y-3 mb-8 text-xl">
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-500"></i> High Quality Audio</div>
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-500"></i> Volume Control</div>
+                            </div>
+                            <button class="w-full creative-btn btn-secondary py-3 rounded-lg text-xl hover:bg-blue-50 hover:-translate-y-1 hover:-translate-x-1">Choose Starter</button>
+                        </div>
+
+                        <!-- Tier 2 -->
+                        <div class="sketchy-box p-8 rotate-[1deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 relative group bg-yellow-50">
+                            <div class="absolute -top-5 right-4 bg-yellow-400 border-2 border-black px-4 py-1 rounded-full font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rotate-3 z-20">
+                                Most Popular!
+                            </div>
+                            <div class="w-14 h-14 rounded-full mb-6 flex items-center justify-center border-2 border-black bg-white text-3xl shadow-sm group-hover:bg-yellow-200 transition-colors">
+                                ⭐️
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Standard</h3>
+                            <div class="mb-6">
+                                <span class="text-5xl font-black">$3</span><span class="text-xl text-gray-500">/2 mo</span>
+                            </div>
+                            <div class="space-y-3 mb-8 text-xl">
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-600"></i> Everything in Starter</div>
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-600"></i> 24/7 Voice</div>
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-600"></i> Priority Support</div>
+                            </div>
+                            <button class="w-full creative-btn btn-primary py-3 rounded-lg text-xl bg-yellow-400 text-black border-black hover:bg-yellow-300 hover:-translate-y-1 hover:-translate-x-1">Choose Standard</button>
+                        </div>
+
+                        <!-- Tier 3 -->
+                        <div class="sketchy-box p-8 rotate-[-2deg] hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 relative group">
+                            <div class="w-14 h-14 rounded-full mb-6 flex items-center justify-center border-2 border-black bg-white text-3xl shadow-sm group-hover:bg-purple-100 transition-colors">
+                                👑
+                            </div>
+                            <h3 class="text-3xl font-bold mb-2">Pro</h3>
+                            <div class="mb-6">
+                                <span class="text-5xl font-black">$5</span><span class="text-xl text-gray-500">/3 mo</span>
+                            </div>
+                            <div class="space-y-3 mb-8 text-xl">
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-500"></i> Everything in Standard</div>
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-500"></i> Server Backups</div>
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-500"></i> Early Access</div>
+                            </div>
+                            <button class="w-full creative-btn btn-secondary py-3 rounded-lg text-xl hover:bg-purple-50 hover:-translate-y-1 hover:-translate-x-1">Choose Pro</button>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE: COMMANDS -->
+        <div id="commands" class="page-section">
+            <section class="py-24">
+                <div class="max-w-4xl mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <div class="text-2xl text-green-600 font-bold rotate-[-1deg] bg-green-100 inline-block px-4 py-1 rounded-lg border-2 border-black mb-4">
+                            200+ Commands
+                        </div>
+                        <h2 class="text-5xl font-black text-slate-900 rotate-[1deg]">Command List</h2>
+                        
+                        <div class="mt-8 max-w-xl mx-auto">
+                            <div class="relative group">
+                                <i class="fa-solid fa-search absolute left-4 top-4 text-xl text-gray-400 group-hover:text-purple-600 transition-colors"></i>
+                                <input type="text" id="cmd-search" placeholder="Search for commands..." class="w-full pl-12 pr-4 py-4 creative-input bg-white" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4" id="cmd-list">
+                        <!-- Commands injected via JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Sketchy Footer -->
+    <footer class="bg-white border-t-2 border-black py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <div class="text-4xl font-black text-slate-900 rotate-[-2deg] inline-block">Vanta<span class="text-purple-600">.</span></div>
+                <p class="text-xl text-gray-500 mt-2">© 2024 Vanta Bot. Hand-crafted with ❤️</p>
+            </div>
+            
+            <div class="flex space-x-6">
+                <a href="https://discord.gg/codexdev" target="_blank" class="w-12 h-12 rounded-lg border-2 border-black flex items-center justify-center text-2xl hover:bg-purple-100 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"><i class="fa-brands fa-discord"></i></a>
+                <a href="https://github.com/imakaszx" target="_blank" class="w-12 h-12 rounded-lg border-2 border-black flex items-center justify-center text-2xl hover:bg-gray-100 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"><i class="fa-brands fa-github"></i></a>
+            </div>
+
+            <div class="text-center md:text-right">
+                <p class="text-xl text-gray-700 font-bold">
+                    Created by <a href="https://instagram.com/imakaszx" target="_blank" class="text-purple-600 underline decoration-wavy decoration-2 hover:text-purple-800 transition-colors">Zenit X</a> & <a href="https://discord.gg/codexdev" target="_blank" class="text-blue-600 underline decoration-wavy decoration-2 hover:text-blue-800 transition-colors">CodexDev</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Initialize Lenis Smooth Scroll ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+
+        // --- Router Logic ---
+        function router(pageId) {
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach(page => page.classList.remove('active'));
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+                // Use Lenis to scroll to top instantly when switching pages
+                lenis.scrollTo(0, { immediate: true });
+            }
+
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                if(tab.getAttribute('data-target') === pageId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // --- Container Scroll Effect Logic ---
+        const headerEl = document.getElementById('hero-header');
+        const cardEl = document.getElementById('hero-card');
+        const SCROLL_DISTANCE = 500; 
+        
+        function handleScrollEffect() {
+            if(!document.getElementById('home').classList.contains('active')) return;
+            const scrollY = window.scrollY;
+            let progress = Math.min(1, Math.max(0, scrollY / SCROLL_DISTANCE));
+            const isMobile = window.innerWidth <= 768;
+            
+            const rotateX = 10 - (10 * progress);
+            let scale;
+            if (isMobile) {
+                scale = 0.8 + (0.1 * progress);
+            } else {
+                scale = 0.95 + (0.05 * progress);
+            }
+            const translateY = -30 * progress;
+            
+            if(cardEl) { cardEl.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`; }
+            if(headerEl) { headerEl.style.transform = `translateY(${translateY}px)`; }
+        }
+
+        window.addEventListener('scroll', handleScrollEffect);
+        handleScrollEffect();
+
+        // --- Search Logic ---
+        const searchInput = document.getElementById('cmd-search');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                const term = e.target.value.toLowerCase();
+                const items = document.querySelectorAll('.cmd-item-root');
+                items.forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    item.style.display = text.includes(term) ? 'block' : 'none';
+                });
+            });
+        }
+
+        // --- Command Data Generation ---
+        const commands = [
+            // Music (25)
+            { cmd: "/play", cat: "Music", desc: "Plays a song or playlist from supported sources." },
+            { cmd: "/pause", cat: "Music", desc: "Pauses the currently playing track." },
+            { cmd: "/resume", cat: "Music", desc: "Resumes playback." },
+            { cmd: "/skip", cat: "Music", desc: "Skips to the next song in the queue." },
+            { cmd: "/stop", cat: "Music", desc: "Stops playback and clears the queue." },
+            { cmd: "/queue", cat: "Music", desc: "Displays the current music queue." },
+            { cmd: "/volume", cat: "Music", desc: "Adjusts the playback volume." },
+            { cmd: "/nowplaying", cat: "Music", desc: "Shows details of the current song." },
+            { cmd: "/loop", cat: "Music", desc: "Toggles looping for track or queue." },
+            { cmd: "/shuffle", cat: "Music", desc: "Shuffles the current queue." },
+            { cmd: "/seek", cat: "Music", desc: "Seeks to a specific timestamp in the song." },
+            { cmd: "/lyrics", cat: "Music", desc: "Fetches lyrics for the current song." },
+            { cmd: "/remove", cat: "Music", desc: "Removes a specific song from the queue." },
+            { cmd: "/clear", cat: "Music", desc: "Clears the entire queue." },
+            { cmd: "/join", cat: "Music", desc: "Summons the bot to your voice channel." },
+            { cmd: "/leave", cat: "Music", desc: "Disconnects the bot from voice." },
+            { cmd: "/forward", cat: "Music", desc: "Forwards the song by seconds." },
+            { cmd: "/rewind", cat: "Music", desc: "Rewinds the song by seconds." },
+            { cmd: "/replay", cat: "Music", desc: "Replays the current song." },
+            { cmd: "/radio", cat: "Music", desc: "Starts 24/7 radio mode." },
+            { cmd: "/bassboost", cat: "Music", desc: "Toggles bass boost filter." },
+            { cmd: "/nightcore", cat: "Music", desc: "Toggles nightcore filter." },
+            { cmd: "/vaporwave", cat: "Music", desc: "Toggles vaporwave filter." },
+            { cmd: "/previous", cat: "Music", desc: "Plays the previous song." },
+            { cmd: "/autoplay", cat: "Music", desc: "Toggles autoplay mode." },
+
+            // Moderation (35)
+            { cmd: "/ban", cat: "Moderation", desc: "Bans a user from the server." },
+            { cmd: "/kick", cat: "Moderation", desc: "Kicks a user from the server." },
+            { cmd: "/mute", cat: "Moderation", desc: "Mutes a user for a duration." },
+            { cmd: "/unmute", cat: "Moderation", desc: "Unmutes a user." },
+            { cmd: "/timeout", cat: "Moderation", desc: "Times out a user." },
+            { cmd: "/unban", cat: "Moderation", desc: "Unbans a user ID." },
+            { cmd: "/warn", cat: "Moderation", desc: "Issues a warning to a user." },
+            { cmd: "/warns", cat: "Moderation", desc: "View warnings for a user." },
+            { cmd: "/clearwarns", cat: "Moderation", desc: "Clears warnings for a user." },
+            { cmd: "/purge", cat: "Moderation", desc: "Deletes a number of messages." },
+            { cmd: "/nuke", cat: "Moderation", desc: "Clones and deletes a channel to clear it." },
+            { cmd: "/lock", cat: "Moderation", desc: "Locks the current channel." },
+            { cmd: "/unlock", cat: "Moderation", desc: "Unlocks the current channel." },
+            { cmd: "/slowmode", cat: "Moderation", desc: "Sets channel slowmode." },
+            { cmd: "/role give", cat: "Moderation", desc: "Gives a role to a user." },
+            { cmd: "/role remove", cat: "Moderation", desc: "Removes a role from a user." },
+            { cmd: "/nickname", cat: "Moderation", desc: "Changes a user's nickname." },
+            { cmd: "/modlogs", cat: "Moderation", desc: "Sets the logging channel." },
+            { cmd: "/softban", cat: "Moderation", desc: "Bans and unbans to clear messages." },
+            { cmd: "/hackban", cat: "Moderation", desc: "Bans a user not in the server." },
+            { cmd: "/vcmute", cat: "Moderation", desc: "Mutes a user in voice." },
+            { cmd: "/vcunmute", cat: "Moderation", desc: "Unmutes a user in voice." },
+            { cmd: "/vcdeafen", cat: "Moderation", desc: "Deafens a user in voice." },
+            { cmd: "/vcundeafen", cat: "Moderation", desc: "Undeafens a user in voice." },
+            { cmd: "/vckick", cat: "Moderation", desc: "Disconnects a user from voice." },
+            { cmd: "/move", cat: "Moderation", desc: "Moves user to another voice channel." },
+            { cmd: "/banlist", cat: "Moderation", desc: "Shows list of banned users." },
+            { cmd: "/reason", cat: "Moderation", desc: "Updates the reason for a mod case." },
+            { cmd: "/automod", cat: "Moderation", desc: "Configures automod settings." },
+            { cmd: "/anti-invite", cat: "Moderation", desc: "Toggles invite blocking." },
+            { cmd: "/anti-link", cat: "Moderation", desc: "Toggles link blocking." },
+            { cmd: "/anti-spam", cat: "Moderation", desc: "Toggles spam protection." },
+            { cmd: "/tempban", cat: "Moderation", desc: "Temporarily bans a user." },
+            { cmd: "/tempmute", cat: "Moderation", desc: "Temporarily mutes a user." },
+            { cmd: "/notes", cat: "Moderation", desc: "View mod notes on a user." },
+
+            // Economy (30)
+            { cmd: "/balance", cat: "Economy", desc: "Check your wallet and bank balance." },
+            { cmd: "/work", cat: "Economy", desc: "Work a shift to earn money." },
+            { cmd: "/daily", cat: "Economy", desc: "Collect your daily reward." },
+            { cmd: "/beg", cat: "Economy", desc: "Beg for coins." },
+            { cmd: "/deposit", cat: "Economy", desc: "Deposit money into the bank." },
+            { cmd: "/withdraw", cat: "Economy", desc: "Withdraw money from the bank." },
+            { cmd: "/rob", cat: "Economy", desc: "Attempt to rob another user." },
+            { cmd: "/pay", cat: "Economy", desc: "Transfer money to another user." },
+            { cmd: "/shop", cat: "Economy", desc: "View items for sale." },
+            { cmd: "/buy", cat: "Economy", desc: "Buy an item from the shop." },
+            { cmd: "/sell", cat: "Economy", desc: "Sell an item from your inventory." },
+            { cmd: "/inventory", cat: "Economy", desc: "View your items." },
+            { cmd: "/fish", cat: "Economy", desc: "Go fishing for rewards." },
+            { cmd: "/hunt", cat: "Economy", desc: "Go hunting for animals." },
+            { cmd: "/slots", cat: "Economy", desc: "Play the slot machine." },
+            { cmd: "/gamble", cat: "Economy", desc: "Bet money on a roll." },
+            { cmd: "/weekly", cat: "Economy", desc: "Collect weekly rewards." },
+            { cmd: "/monthly", cat: "Economy", desc: "Collect monthly rewards." },
+            { cmd: "/leaderboard", cat: "Economy", desc: "View the richest users." },
+            { cmd: "/crime", cat: "Economy", desc: "Commit a crime for high risk/reward." },
+            { cmd: "/blackjack", cat: "Economy", desc: "Play blackjack." },
+            { cmd: "/roulette", cat: "Economy", desc: "Play roulette." },
+            { cmd: "/cockfight", cat: "Economy", desc: "Bet on a cockfight." },
+            { cmd: "/dig", cat: "Economy", desc: "Dig for treasure." },
+            { cmd: "/search", cat: "Economy", desc: "Search areas for cash." },
+            { cmd: "/store", cat: "Economy", desc: "View the server store." },
+            { cmd: "/use", cat: "Economy", desc: "Use an item." },
+            { cmd: "/give", cat: "Economy", desc: "Give an item to a user." },
+            { cmd: "/trade", cat: "Economy", desc: "Trade with another user." },
+            { cmd: "/lottery", cat: "Economy", desc: "Enter the lottery." },
+
+            // Fun (40)
+            { cmd: "/meme", cat: "Fun", desc: "Fetches a random meme." },
+            { cmd: "/joke", cat: "Fun", desc: "Tells a random joke." },
+            { cmd: "/8ball", cat: "Fun", desc: "Ask the magic 8ball a question." },
+            { cmd: "/coinflip", cat: "Fun", desc: "Flips a coin." },
+            { cmd: "/roll", cat: "Fun", desc: "Rolls a dice." },
+            { cmd: "/rps", cat: "Fun", desc: "Play Rock, Paper, Scissors." },
+            { cmd: "/cat", cat: "Fun", desc: "Shows a random cat picture." },
+            { cmd: "/dog", cat: "Fun", desc: "Shows a random dog picture." },
+            { cmd: "/hug", cat: "Fun", desc: "Hug another user." },
+            { cmd: "/kiss", cat: "Fun", desc: "Kiss another user." },
+            { cmd: "/slap", cat: "Fun", desc: "Slap another user." },
+            { cmd: "/pat", cat: "Fun", desc: "Pat another user." },
+            { cmd: "/kill", cat: "Fun", desc: "Kill another user (RP)." },
+            { cmd: "/ship", cat: "Fun", desc: "Check compatibility between two users." },
+            { cmd: "/love", cat: "Fun", desc: "Calculate love percentage." },
+            { cmd: "/advice", cat: "Fun", desc: "Get random advice." },
+            { cmd: "/fact", cat: "Fun", desc: "Get a random fact." },
+            { cmd: "/roast", cat: "Fun", desc: "Roast a user." },
+            { cmd: "/ascii", cat: "Fun", desc: "Convert text to ASCII art." },
+            { cmd: "/emojify", cat: "Fun", desc: "Convert text to emojis." },
+            { cmd: "/hack", cat: "Fun", desc: "Fake hack a user." },
+            { cmd: "/howgay", cat: "Fun", desc: "Calculates how gay you are." },
+            { cmd: "/pp", cat: "Fun", desc: "Measures PP size." },
+            { cmd: "/tictactoe", cat: "Fun", desc: "Play Tic Tac Toe." },
+            { cmd: "/trivia", cat: "Fun", desc: "Start a trivia quiz." },
+            { cmd: "/akinator", cat: "Fun", desc: "Play with Akinator." },
+            { cmd: "/poll", cat: "Fun", desc: "Create a simple poll." },
+            { cmd: "/wouldyourather", cat: "Fun", desc: "Play Would You Rather." },
+            { cmd: "/dadjoke", cat: "Fun", desc: "Get a dad joke." },
+            { cmd: "/quote", cat: "Fun", desc: "Get an inspirational quote." },
+            { cmd: "/cuddle", cat: "Fun", desc: "Cuddle a user." },
+            { cmd: "/poke", cat: "Fun", desc: "Poke a user." },
+            { cmd: "/feed", cat: "Fun", desc: "Feed a user." },
+            { cmd: "/bite", cat: "Fun", desc: "Bite a user." },
+            { cmd: "/punch", cat: "Fun", desc: "Punch a user." },
+            { cmd: "/stare", cat: "Fun", desc: "Stare at a user." },
+            { cmd: "/cry", cat: "Fun", desc: "Cry gif." },
+            { cmd: "/laugh", cat: "Fun", desc: "Laugh gif." },
+            { cmd: "/dance", cat: "Fun", desc: "Dance gif." },
+            { cmd: "/smug", cat: "Fun", desc: "Smug gif." },
+
+            // Utility (35)
+            { cmd: "/ping", cat: "Utility", desc: "Checks bot latency." },
+            { cmd: "/help", cat: "Utility", desc: "Shows all commands." },
+            { cmd: "/info", cat: "Utility", desc: "Bot statistics and info." },
+            { cmd: "/invite", cat: "Utility", desc: "Get the bot invite link." },
+            { cmd: "/support", cat: "Utility", desc: "Get the support server link." },
+            { cmd: "/userinfo", cat: "Utility", desc: "Get info about a user." },
+            { cmd: "/serverinfo", cat: "Utility", desc: "Get info about the server." },
+            { cmd: "/avatar", cat: "Utility", desc: "Get a user's avatar." },
+            { cmd: "/banner", cat: "Utility", desc: "Get a user's banner." },
+            { cmd: "/servericon", cat: "Utility", desc: "Get the server icon." },
+            { cmd: "/roles", cat: "Utility", desc: "List all server roles." },
+            { cmd: "/channels", cat: "Utility", desc: "List all server channels." },
+            { cmd: "/emoji", cat: "Utility", desc: "View or steal an emoji." },
+            { cmd: "/remind", cat: "Utility", desc: "Set a reminder." },
+            { cmd: "/weather", cat: "Utility", desc: "Check the weather." },
+            { cmd: "/calculate", cat: "Utility", desc: "Solve a math problem." },
+            { cmd: "/translate", cat: "Utility", desc: "Translate text." },
+            { cmd: "/afk", cat: "Utility", desc: "Set your AFK status." },
+            { cmd: "/snipe", cat: "Utility", desc: "Show the last deleted message." },
+            { cmd: "/editsnipe", cat: "Utility", desc: "Show the last edited message." },
+            { cmd: "/whois", cat: "Utility", desc: "Alias for userinfo." },
+            { cmd: "/urban", cat: "Utility", desc: "Search Urban Dictionary." },
+            { cmd: "/wiki", cat: "Utility", desc: "Search Wikipedia." },
+            { cmd: "/imdb", cat: "Utility", desc: "Search for a movie." },
+            { cmd: "/anime", cat: "Utility", desc: "Search for an anime." },
+            { cmd: "/define", cat: "Utility", desc: "Define a word." },
+            { cmd: "/convert", cat: "Utility", desc: "Convert units or currency." },
+            { cmd: "/uptime", cat: "Utility", desc: "Check bot uptime." },
+            { cmd: "/vote", cat: "Utility", desc: "Vote for the bot." },
+            { cmd: "/report", cat: "Utility", desc: "Report a bug." },
+            { cmd: "/serverstats", cat: "Utility", desc: "Detailed server statistics." },
+            { cmd: "/membercount", cat: "Utility", desc: "Show member count." },
+            { cmd: "/botinfo", cat: "Utility", desc: "Detailed bot info." },
+            { cmd: "/dashboard", cat: "Utility", desc: "Link to dashboard." },
+            { cmd: "/partners", cat: "Utility", desc: "View bot partners." },
+
+            // Leveling (15)
+            { cmd: "/rank", cat: "Leveling", desc: "Check your current level." },
+            { cmd: "/levels", cat: "Leveling", desc: "View the server leaderboard." },
+            { cmd: "/givexp", cat: "Leveling", desc: "Give XP to a user (Admin)." },
+            { cmd: "/removexp", cat: "Leveling", desc: "Remove XP from a user." },
+            { cmd: "/setlevel", cat: "Leveling", desc: "Set a user's level." },
+            { cmd: "/levelconfig", cat: "Leveling", desc: "Configure leveling settings." },
+            { cmd: "/rankcard", cat: "Leveling", desc: "Customize your rank card." },
+            { cmd: "/rewards", cat: "Leveling", desc: "View level-up role rewards." },
+            { cmd: "/resetlevels", cat: "Leveling", desc: "Reset server levels." },
+            { cmd: "/xprate", cat: "Leveling", desc: "Set XP multiplier." },
+            { cmd: "/background", cat: "Leveling", desc: "Set rank card background." },
+            { cmd: "/rep", cat: "Leveling", desc: "Give reputation to a user." },
+            { cmd: "/xp", cat: "Leveling", desc: "Check XP needed for next level." },
+            { cmd: "/leaderboard-level", cat: "Leveling", desc: "Alias for levels." },
+            { cmd: "/addreward", cat: "Leveling", desc: "Add a role reward." },
+
+            // Admin/Config (30)
+            { cmd: "/prefix", cat: "Config", desc: "Change the bot prefix." },
+            { cmd: "/language", cat: "Config", desc: "Change bot language." },
+            { cmd: "/welcome", cat: "Config", desc: "Setup welcome channel." },
+            { cmd: "/goodbye", cat: "Config", desc: "Setup goodbye channel." },
+            { cmd: "/autorole", cat: "Config", desc: "Setup role given on join." },
+            { cmd: "/ticket", cat: "Config", desc: "Setup ticket system." },
+            { cmd: "/reactionrole", cat: "Config", desc: "Setup reaction roles." },
+            { cmd: "/verify", cat: "Config", desc: "Setup verification system." },
+            { cmd: "/embed", cat: "Config", desc: "Create a custom embed." },
+            { cmd: "/say", cat: "Config", desc: "Make the bot say something." },
+            { cmd: "/dm", cat: "Config", desc: "DM a user as the bot." },
+            { cmd: "/announcement", cat: "Config", desc: "Send an announcement." },
+            { cmd: "/giveaway start", cat: "Config", desc: "Start a giveaway." },
+            { cmd: "/giveaway end", cat: "Config", desc: "End a giveaway." },
+            { cmd: "/giveaway reroll", cat: "Config", desc: "Reroll a giveaway." },
+            { cmd: "/antispam", cat: "Config", desc: "Configure anti-spam." },
+            { cmd: "/alt-identifier", cat: "Config", desc: "Identify alt accounts." },
+            { cmd: "/audit", cat: "Config", desc: "Configure audit logs." },
+            { cmd: "/backup create", cat: "Config", desc: "Create a server backup." },
+            { cmd: "/backup load", cat: "Config", desc: "Load a server backup." },
+            { cmd: "/whitelist", cat: "Config", desc: "Whitelist channels or roles." },
+            { cmd: "/blacklist", cat: "Config", desc: "Blacklist channels or roles." },
+            { cmd: "/command disable", cat: "Config", desc: "Disable a command." },
+            { cmd: "/command enable", cat: "Config", desc: "Enable a command." },
+            { cmd: "/starboard", cat: "Config", desc: "Setup starboard channel." },
+            { cmd: "/suggestions", cat: "Config", desc: "Setup suggestions channel." },
+            { cmd: "/count", cat: "Config", desc: "Setup counting channel." },
+            { cmd: "/youtube", cat: "Config", desc: "Setup YouTube notifications." },
+            { cmd: "/twitch", cat: "Config", desc: "Setup Twitch notifications." },
+            { cmd: "/twitter", cat: "Config", desc: "Setup Twitter notifications." },
+
+            // Images (20)
+            { cmd: "/slap-gif", cat: "Images", desc: "Get a slap gif." },
+            { cmd: "/hug-gif", cat: "Images", desc: "Get a hug gif." },
+            { cmd: "/wasted", cat: "Images", desc: "GTA Wasted overlay." },
+            { cmd: "/trigger", cat: "Images", desc: "Triggered overlay." },
+            { cmd: "/jail", cat: "Images", desc: "Put user in jail." },
+            { cmd: "/wanted", cat: "Images", desc: "Wanted poster overlay." },
+            { cmd: "/pixelate", cat: "Images", desc: "Pixelate user avatar." },
+            { cmd: "/blur", cat: "Images", desc: "Blur user avatar." },
+            { cmd: "/invert", cat: "Images", desc: "Invert colors of avatar." },
+            { cmd: "/sepia", cat: "Images", desc: "Sepia filter." },
+            { cmd: "/tweet", cat: "Images", desc: "Fake tweet generator." },
+            { cmd: "/phcomment", cat: "Images", desc: "Fake PH comment." },
+            { cmd: "/changemymind", cat: "Images", desc: "Change My Mind meme." },
+            { cmd: "/trash", cat: "Images", desc: "Trash meme overlay." },
+            { cmd: "/rip", cat: "Images", desc: "RIP tombstone overlay." },
+            { cmd: "/beautiful", cat: "Images", desc: "Beautiful meme overlay." },
+            { cmd: "/affect", cat: "Images", desc: "No, it doesn't affect my baby." },
+            { cmd: "/deepfry", cat: "Images", desc: "Deepfry an image." },
+            { cmd: "/hitler", cat: "Images", desc: "Worse than hitler meme." },
+            { cmd: "/circle", cat: "Images", desc: "Circle crop an image." },
+
+            // Games (15)
+            { cmd: "/minecraft", cat: "Game", desc: "Get Minecraft server status." },
+            { cmd: "/skin", cat: "Game", desc: "Get Minecraft skin." },
+            { cmd: "/valorant", cat: "Game", desc: "Get Valorant stats." },
+            { cmd: "/fortnite", cat: "Game", desc: "Get Fortnite stats." },
+            { cmd: "/roblox", cat: "Game", desc: "Get Roblox user info." },
+            { cmd: "/steam", cat: "Game", desc: "Search Steam games." },
+            { cmd: "/osu", cat: "Game", desc: "Get Osu! stats." },
+            { cmd: "/apex", cat: "Game", desc: "Get Apex Legends stats." },
+            { cmd: "/lol", cat: "Game", desc: "Get League of Legends stats." },
+            { cmd: "/chess", cat: "Game", desc: "Play chess." },
+            { cmd: "/checkers", cat: "Game", desc: "Play checkers." },
+            { cmd: "/connect4", cat: "Game", desc: "Play Connect 4." },
+            { cmd: "/hangman", cat: "Game", desc: "Play Hangman." },
+            { cmd: "/sudoku", cat: "Game", desc: "Play Sudoku." },
+            { cmd: "/pubg", cat: "Game", desc: "Get PUBG stats." },
+
+            // Search (8)
+            { cmd: "/playstore", cat: "Search", desc: "Search Google Play Store." },
+            { cmd: "/appstore", cat: "Search", desc: "Search Apple App Store." },
+            { cmd: "/google", cat: "Search", desc: "Search Google." },
+            { cmd: "/youtube-search", cat: "Search", desc: "Search YouTube." },
+            { cmd: "/image", cat: "Search", desc: "Search for an image." },
+            { cmd: "/gif", cat: "Search", desc: "Search for a GIF." },
+            { cmd: "/weather-search", cat: "Search", desc: "Search weather for a city." },
+            { cmd: "/maps", cat: "Search", desc: "Get a map of a location." },
+
+            // Misc/Info (7)
+            { cmd: "/covid", cat: "Info", desc: "COVID-19 statistics." },
+            { cmd: "/worldclock", cat: "Info", desc: "Current time worldwide." },
+            { cmd: "/binary", cat: "Utility", desc: "Text to binary converter." },
+            { cmd: "/qr", cat: "Utility", desc: "Generate QR code." },
+            { cmd: "/shorten", cat: "Utility", desc: "Shorten a URL." },
+            { cmd: "/expand", cat: "Utility", desc: "Expand a shortened URL." },
+            { cmd: "/color", cat: "Utility", desc: "Get color hex/rgb info." }
+        ];
+
+        function renderCommands() {
+            const listContainer = document.getElementById('cmd-list');
+            if(!listContainer) return;
+            listContainer.innerHTML = '';
+            commands.forEach((command, index) => {
+                let badgeColor = 'bg-gray-100 text-gray-700';
+                if(command.cat === 'Music') badgeColor = 'bg-purple-100 text-purple-700';
+                if(command.cat === 'Moderation') badgeColor = 'bg-red-100 text-red-700';
+                if(command.cat === 'Economy') badgeColor = 'bg-green-100 text-green-700';
+                
+                const rotation = index % 2 === 0 ? 'rotate-[-1deg]' : 'rotate-[1deg]';
+                
+                const item = document.createElement('div');
+                item.className = `cmd-item-root sketchy-box p-4 ${rotation} hover:rotate-0 hover:-translate-y-1 hover:-translate-x-1 cursor-pointer mb-4`;
+                item.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <code class="${badgeColor} font-bold px-3 py-1 rounded-lg border border-black text-lg">${command.cmd}</code>
+                        <span class="text-gray-500 font-bold text-lg">${command.cat}</span>
+                    </div>
+                    <p class="text-gray-700 mt-2 text-xl">${command.desc}</p>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            router('home');
+            renderCommands();
+        });
+    </script>
+</body>
+</html>
